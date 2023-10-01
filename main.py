@@ -1,17 +1,34 @@
 #!/usr/bin/env python3
+import unittest
+import pandas as pd
+import numpy as np
+import tensorflow as tf
 
 from preprocessing import data_loader, data_transformer
 from neural_network import autoencoder
 from anomaly_detection import detector, response
 
+# Check for non-numeric values in the dataset
+def check_for_non_numeric(data):
+    non_numeric_cols = data.select_dtypes(exclude=[np.number]).columns.tolist()
+    if non_numeric_cols:
+        print(f"Error: The following columns have non-numeric values: {', '.join(non_numeric_cols)}")
+        return True
+    return False
+
 try:
-    # Load and preprocess data
+    # Load data
     try:
-        data = data_loader.load_data("data/satellite_telemetry_data.csv")
+        data = data_loader.load_data("data/theoretical_telemetry_data.csv")
     except FileNotFoundError:
         print("Error: Telemetry data file not found.")
         exit()
+
+    # Check for non-numeric values
+    if check_for_non_numeric(data):
+        exit()
     
+    # Normalize data
     try:
         normalized_data = data_transformer.normalize_data(data)
     except Exception as e:
