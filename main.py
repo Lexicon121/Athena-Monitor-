@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 
 from preprocessing import data_loader, data_transformer
@@ -11,13 +10,13 @@ try:
         data = data_loader.load_data("data/satellite_telemetry_data.csv")
     except FileNotFoundError:
         print("Error: Telemetry data file not found.")
-        return
+        exit()
     
     try:
         normalized_data = data_transformer.normalize_data(data)
     except Exception as e:
         print(f"Error during data normalization: {e}")
-        return
+        exit()
     
     # Build and train the autoencoder
     input_dim = normalized_data.shape[1]
@@ -28,7 +27,7 @@ try:
         model.fit(X_train, X_train, epochs=50, batch_size=256, validation_data=(X_test, X_test))
     except Exception as e:
         print(f"Error during model training: {e}")
-        return
+        exit()
 
     # Detect anomalies and respond in real-time (placeholder logic)
     new_data = X_test  # Placeholder for new incoming data
@@ -36,14 +35,14 @@ try:
         anomalies = detector.detect_anomaly(model, new_data)
     except Exception as e:
         print(f"Error during anomaly detection: {e}")
-        return
+        exit()
         
     if any(anomalies):
         try:
             response.trigger_response()
         except Exception as e:
             print(f"Error during response triggering: {e}")
-            return
+            exit()
 
 except Exception as e:
     print(f"Unexpected error: {e}")
